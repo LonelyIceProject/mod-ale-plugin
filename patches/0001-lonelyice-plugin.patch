@@ -60,3 +60,163 @@ index 71777d6..0093773 100644
  
      // append our custom require paths and cpaths if the config variables are not empty
      if (!lua_path_extra.empty())
+diff --git a/src/LuaEngine/LuaEngine.h b/src/LuaEngine/LuaEngine.h
+index c311d90..0cbbf07 100644
+--- a/src/LuaEngine/LuaEngine.h
++++ b/src/LuaEngine/LuaEngine.h
+@@ -106,7 +106,11 @@ struct LuaScript
+ #define ALE_STATE_PTR "ALE State Ptr"
+ #define LOCK_ALE ALE::Guard __guard(ALE::GetLock())
+ 
++#if defined(AC_PLUGIN_BUILD)
++#define ALE_GAME_API
++#else
+ #define ALE_GAME_API AC_GAME_API
++#endif
+ 
+ class ALE_GAME_API ALE
+ {
+diff --git a/src/LuaEngine/LuaFunctions.cpp b/src/LuaEngine/LuaFunctions.cpp
+index 2c9c4a9..26adbc4 100644
+--- a/src/LuaEngine/LuaFunctions.cpp
++++ b/src/LuaEngine/LuaFunctions.cpp
+@@ -59,7 +59,7 @@ extern "C"
+ 
+ luaL_Reg GlobalMethods[] =
+ {
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+     { "GetPlayerbotsMgr", &LuaPlayerBotsMgrGlobal::GetPlayerbotsMgr },
+     { "GetRandomPlayerbotMgr", &LuaRandomPlayerBotMgrGlobal::GetRandomPlayerbotMgr },
+     { "CreatePlayerbotFactory", &LuaPlayerBotFactoryGlobal::CreatePlayerbotFactory },
+@@ -861,7 +861,7 @@ ALERegister<Player> PlayerMethods[] =
+     { "SetCreationTime", &LuaPlayer::SetCreationTime },
+     { "ApplyRatingMod", &LuaPlayer::ApplyRatingMod },
+ 
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+     { "IsPlayerbot", &LuaPlayerBot::IsPlayerbot },
+     { "GetBotAI", &LuaPlayerBot::GetBotAI },
+     { "IsRealPlayer", &LuaPlayerBot::IsRealPlayer },
+@@ -892,7 +892,7 @@ ALERegister<Player> PlayerMethods[] =
+     { NULL, NULL }
+ };
+ 
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+ ALERegister<PlayerbotAI> PlayerbotAIMethods[] =
+ {
+     { "GetBot", &LuaPlayerBotAI::GetBot },
+@@ -2224,7 +2224,7 @@ void RegisterFunctions(ALE* E)
+     ALETemplate<Player>::SetMethods(E, UnitMethods);
+     ALETemplate<Player>::SetMethods(E, PlayerMethods);
+ 
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+     ALETemplate<PlayerbotAI>::Register(E, "PlayerbotAI");
+     ALETemplate<PlayerbotAI>::SetMethods(E, PlayerbotAIMethods);
+ 
+diff --git a/src/LuaEngine/methods/PlayerMethods.h b/src/LuaEngine/methods/PlayerMethods.h
+index dbe4334..dee0cdf 100644
+--- a/src/LuaEngine/methods/PlayerMethods.h
++++ b/src/LuaEngine/methods/PlayerMethods.h
+@@ -5163,7 +5163,7 @@ namespace LuaPlayer
+      */
+     int IsBot(lua_State* L, Player* player)
+     {
+-    #if defined(MOD_PLAYERBOTS)
++    #if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+         ALE::Push(L, player->GetSession()->IsBot());
+     #else
+         (void)player;
+diff --git a/src/LuaEngine/methods/Playerbots/PlayerBotAIMethods.h b/src/LuaEngine/methods/Playerbots/PlayerBotAIMethods.h
+index 4a295a3..db51804 100644
+--- a/src/LuaEngine/methods/Playerbots/PlayerBotAIMethods.h
++++ b/src/LuaEngine/methods/Playerbots/PlayerBotAIMethods.h
+@@ -7,7 +7,7 @@
+ #ifndef PLAYERBOTAIMETHODS_H
+ #define PLAYERBOTAIMETHODS_H
+ 
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+ #include "PlayerbotAI.h"
+ #include "PlayerbotAIConfig.h"
+ #include "PlayerbotMgr.h"
+diff --git a/src/LuaEngine/methods/Playerbots/PlayerBotFactoryMethods.h b/src/LuaEngine/methods/Playerbots/PlayerBotFactoryMethods.h
+index b9c52da..bbdcbc8 100644
+--- a/src/LuaEngine/methods/Playerbots/PlayerBotFactoryMethods.h
++++ b/src/LuaEngine/methods/Playerbots/PlayerBotFactoryMethods.h
+@@ -7,7 +7,7 @@
+ #ifndef PLAYERBOTFACTORYMETHODS_H
+ #define PLAYERBOTFACTORYMETHODS_H
+ 
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+ #include "PlayerbotAI.h"
+ #include "PlayerbotFactory.h"
+ 
+diff --git a/src/LuaEngine/methods/Playerbots/PlayerBotHolderMethods.h b/src/LuaEngine/methods/Playerbots/PlayerBotHolderMethods.h
+index 7f83fc1..bf934f7 100644
+--- a/src/LuaEngine/methods/Playerbots/PlayerBotHolderMethods.h
++++ b/src/LuaEngine/methods/Playerbots/PlayerBotHolderMethods.h
+@@ -7,7 +7,7 @@
+ #ifndef PLAYERBOTHOLDERMETHODS_H
+ #define PLAYERBOTHOLDERMETHODS_H
+ 
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+ #include "PlayerbotAI.h"
+ #include "PlayerbotMgr.h"
+ 
+diff --git a/src/LuaEngine/methods/Playerbots/PlayerBotMethods.h b/src/LuaEngine/methods/Playerbots/PlayerBotMethods.h
+index 7c6def3..9532431 100644
+--- a/src/LuaEngine/methods/Playerbots/PlayerBotMethods.h
++++ b/src/LuaEngine/methods/Playerbots/PlayerBotMethods.h
+@@ -7,7 +7,7 @@
+ #ifndef PLAYERBOTMETHODS_H
+ #define PLAYERBOTMETHODS_H
+ 
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+ #include "PlayerbotAI.h"
+ #include "PlayerbotMgr.h"
+ #include "RandomPlayerbotMgr.h"
+diff --git a/src/LuaEngine/methods/Playerbots/PlayerBotMgrMethods.h b/src/LuaEngine/methods/Playerbots/PlayerBotMgrMethods.h
+index 08ec5cd..1bdc18f 100644
+--- a/src/LuaEngine/methods/Playerbots/PlayerBotMgrMethods.h
++++ b/src/LuaEngine/methods/Playerbots/PlayerBotMgrMethods.h
+@@ -7,7 +7,7 @@
+ #ifndef PLAYERBOTMGRMETHODS_H
+ #define PLAYERBOTMGRMETHODS_H
+ 
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+ #include "Chat.h"
+ #include "PlayerbotAI.h"
+ #include "PlayerbotMgr.h"
+diff --git a/src/LuaEngine/methods/Playerbots/PlayerBotsMgrMethods.h b/src/LuaEngine/methods/Playerbots/PlayerBotsMgrMethods.h
+index 08dde49..c4cfff6 100644
+--- a/src/LuaEngine/methods/Playerbots/PlayerBotsMgrMethods.h
++++ b/src/LuaEngine/methods/Playerbots/PlayerBotsMgrMethods.h
+@@ -7,7 +7,7 @@
+ #ifndef PLAYERBOTSMGRMETHODS_H
+ #define PLAYERBOTSMGRMETHODS_H
+ 
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+ #include "PlayerbotAI.h"
+ #include "PlayerbotMgr.h"
+ 
+diff --git a/src/LuaEngine/methods/Playerbots/RandomPlayerBotMgrMethods.h b/src/LuaEngine/methods/Playerbots/RandomPlayerBotMgrMethods.h
+index 07e8ad2..a70a648 100644
+--- a/src/LuaEngine/methods/Playerbots/RandomPlayerBotMgrMethods.h
++++ b/src/LuaEngine/methods/Playerbots/RandomPlayerBotMgrMethods.h
+@@ -7,7 +7,7 @@
+ #ifndef RANDOMPLAYERBOTMGRMETHODS_H
+ #define RANDOMPLAYERBOTMGRMETHODS_H
+ 
+-#ifdef MOD_PLAYERBOTS
++#if defined(MOD_PLAYERBOTS) && !defined(AC_PLUGIN_BUILD)
+ #include "PlayerbotAI.h"
+ #include "PlayerbotMgr.h"
+ #include "RandomPlayerbotMgr.h"

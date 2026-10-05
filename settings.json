@@ -58,7 +58,7 @@
     },
     {
       "key": "ALE.ScriptPath",
-      "type": "text",
+      "type": "string",
       "default": "lua_scripts",
       "apply": "restart",
       "label": {

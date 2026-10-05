@@ -7,8 +7,8 @@
     "ru": "Lua-движок ALE"
   },
   "description": {
-    "en": "ALE Lua engine for LonelyIce",
-    "ru": "Lua-движок ALE для LonelyIce"
+    "en": "Lua 5.2 scripting engine. Loads Lua files from enabled packages and a local scripts folder. ALE compatibility differs from original Eluna.",
+    "ru": "Движок Lua 5.2. Загружает скрипты включённых пакетов и локального каталога. Совместимость ALE отличается от оригинальной Eluna."
   },
   "authors": [
     "AzerothCore",
@@ -27,7 +27,8 @@
     "abi": "lonelyice-ac-2"
   },
   "platforms": [
-    "windows-x64"
+    "windows-x64",
+    "linux-x64"
   ],
   "server": {
     "library": "mod_ale"

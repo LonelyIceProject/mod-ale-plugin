@@ -14,10 +14,12 @@ if(UNIX)
 endif()
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${module}/src/*.cpp")
 list(FILTER sources EXCLUDE REGEX "/lualib/")
-AddPlugin(mod-ale SOURCES ${sources} plugin/plugin.cpp LINK lonelyice-ale-lua)
-target_include_directories(mod-ale PRIVATE "${module}/src/LuaEngine")
+AddPlugin(mod-ale SOURCES ${sources} plugin/plugin.cpp LINK lonelyice-ale-lua scripts)
+target_include_directories(mod-ale PRIVATE "${module}/src/LuaEngine" "${module}/src/LuaEngine/methods" "${module}/src/LuaEngine/hooks")
 add_custom_target(mod-ale-upstream-files
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/LUA-LICENSE.txt" "${AC_PLUGINS_OUTPUT_DIR}/mod-ale/LUA-LICENSE.txt"
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${module}/conf" "${AC_PLUGINS_OUTPUT_DIR}/mod-ale/conf"
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${module}/src/LuaEngine/extensions" "${AC_PLUGINS_OUTPUT_DIR}/mod-ale/lua"
-  DEPENDS mod-ale-files VERBATIM)
+  VERBATIM)
+add_dependencies(mod-ale-upstream-files mod-ale-files)
 add_dependencies(mod-ale mod-ale-upstream-files)
