@@ -1,0 +1,43 @@
+{
+  "format": 1,
+  "id": "mod-ale",
+  "version": "0.1.0",
+  "name": {
+    "en": "ALE Lua engine",
+    "ru": "Lua-движок ALE"
+  },
+  "description": {
+    "en": "ALE Lua engine for LonelyIce",
+    "ru": "Lua-движок ALE для LonelyIce"
+  },
+  "authors": [
+    "AzerothCore",
+    "Eluna Lua Engine"
+  ],
+  "license": "GPL-3.0-only",
+  "homepage": "https://github.com/LonelyIceProject/mod-ale-plugin",
+  "locales": [
+    "*"
+  ],
+  "source": {
+    "repo": "https://github.com/azerothcore/mod-ale.git",
+    "commit": "bd74eae623ca63154d3eb49e1d187e872ef13370"
+  },
+  "core": {
+    "abi": "lonelyice-ac-2"
+  },
+  "platforms": [
+    "windows-x64"
+  ],
+  "server": {
+    "library": "mod_ale"
+  },
+  "settings": "settings.json",
+  "config": "conf/mod_ale.conf.dist",
+  "conflicts": [
+    "mod-eluna"
+  ],
+  "provides": [
+    "lua:ale"
+  ]
+}

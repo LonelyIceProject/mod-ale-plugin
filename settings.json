@@ -1,0 +1,70 @@
+{
+  "group": {
+    "en": "ALE Lua engine",
+    "ru": "Lua-движок ALE"
+  },
+  "fields": [
+    {
+      "key": "ALE.Enabled",
+      "type": "bool",
+      "default": true,
+      "apply": "restart",
+      "label": {
+        "en": "Enable Lua scripts",
+        "ru": "Включить Lua-скрипты"
+      }
+    },
+    {
+      "key": "ALE.TraceBack",
+      "type": "bool",
+      "default": false,
+      "apply": "restart",
+      "label": {
+        "en": "Detailed Lua errors",
+        "ru": "Подробные ошибки Lua"
+      }
+    },
+    {
+      "key": "ALE.AutoReload",
+      "type": "bool",
+      "default": false,
+      "apply": "restart",
+      "label": {
+        "en": "Reload changed local scripts automatically",
+        "ru": "Автоматически перезагружать локальные скрипты"
+      }
+    },
+    {
+      "key": "ALE.AutoReloadInterval",
+      "type": "int",
+      "default": 1,
+      "apply": "restart",
+      "label": {
+        "en": "Reload check interval (seconds)",
+        "ru": "Интервал проверки (секунды)"
+      },
+      "min": 1,
+      "max": 3600
+    },
+    {
+      "key": "ALE.BytecodeCache",
+      "type": "bool",
+      "default": true,
+      "apply": "restart",
+      "label": {
+        "en": "Cache compiled Lua scripts",
+        "ru": "Кэшировать скомпилированные скрипты"
+      }
+    },
+    {
+      "key": "ALE.ScriptPath",
+      "type": "text",
+      "default": "lua_scripts",
+      "apply": "restart",
+      "label": {
+        "en": "Additional local scripts directory",
+        "ru": "Каталог дополнительных локальных скриптов"
+      }
+    }
+  ]
+}

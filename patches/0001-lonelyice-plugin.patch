@@ -1,0 +1,62 @@
+diff --git a/src/LuaEngine/ALEConfig.cpp b/src/LuaEngine/ALEConfig.cpp
+index e3eca21..7ad88ce 100644
+--- a/src/LuaEngine/ALEConfig.cpp
++++ b/src/LuaEngine/ALEConfig.cpp
+@@ -17,10 +17,10 @@ void ALEConfig::Initialize(bool reload)
+ 
+ void ALEConfig::BuildConfigCache()
+ {
+-    SetConfigValue<bool>(ALEConfigValues::ENABLED,                    "ALE.Enabled",            "false");
+-    SetConfigValue<bool>(ALEConfigValues::TRACEBACK_ENABLED,          "ALE.TraceBack",          "false");
+-    SetConfigValue<bool>(ALEConfigValues::AUTORELOAD_ENABLED,         "ALE.AutoReload",         "false");
+-    SetConfigValue<bool>(ALEConfigValues::BYTECODE_CACHE_ENABLED,     "ALE.BytecodeCache",      "false");
++    SetConfigValue<bool>(ALEConfigValues::ENABLED,                    "ALE.Enabled",            false);
++    SetConfigValue<bool>(ALEConfigValues::TRACEBACK_ENABLED,          "ALE.TraceBack",          false);
++    SetConfigValue<bool>(ALEConfigValues::AUTORELOAD_ENABLED,         "ALE.AutoReload",         false);
++    SetConfigValue<bool>(ALEConfigValues::BYTECODE_CACHE_ENABLED,     "ALE.BytecodeCache",      false);
+ 
+     SetConfigValue<std::string>(ALEConfigValues::SCRIPT_PATH,         "ALE.ScriptPath",         "lua_scripts");
+     SetConfigValue<std::string>(ALEConfigValues::REQUIRE_PATH,        "ALE.RequirePaths",       "");
+diff --git a/src/LuaEngine/LuaEngine.cpp b/src/LuaEngine/LuaEngine.cpp
+index 71777d6..0093773 100644
+--- a/src/LuaEngine/LuaEngine.cpp
++++ b/src/LuaEngine/LuaEngine.cpp
+@@ -15,6 +15,7 @@
+ #include "ALEUtility.h"
+ #include "ALECreatureAI.h"
+ #include "ALEInstanceAI.h"
++#include "PluginMgr.h"
+ 
+ #if AC_PLATFORM == AC_PLATFORM_WINDOWS
+ #define ALE_WINDOWS
+@@ -64,9 +65,7 @@ void ALE::Initialize()
+     LOCK_ALE;
+     ASSERT(!IsInitialized());
+ 
+-    // For instance data the data column needs to be able to hold more than 255 characters (tinytext)
+-    // so we change it to TEXT automatically on startup
+-    CharacterDatabase.DirectExecute("ALTER TABLE `instance` CHANGE COLUMN `data` `data` TEXT NOT NULL");
++    // LonelyIce already stores instance data as TEXT on every database backend.
+ 
+     LoadScriptPaths();
+ 
+@@ -122,7 +121,7 @@ void ALE::LoadScriptPaths()
+     const std::string& lua_cpath_extra = static_cast<std::string>(ALEConfig::GetInstance().GetRequireCPath());
+ 
+ #ifndef ALE_WINDOWS
+-    if (lua_folderpath[0] == '~')
++    if (!lua_folderpath.empty() && lua_folderpath[0] == '~')
+         if (const char* home = getenv("HOME"))
+             lua_folderpath.replace(0, 1, home);
+ #endif
+@@ -133,6 +132,10 @@ void ALE::LoadScriptPaths()
+     lua_requirecpath.clear();
+ 
+     GetScripts(lua_folderpath);
++    // Disabled packages are outside PluginMgr's active list. A failed dependency must not execute scripts.
++    for (auto const& plugin : sPluginMgr->GetPlugins())
++        if (plugin.loaded)
++            GetScripts((plugin.dir / "lua").generic_string());
+ 
+     // append our custom require paths and cpaths if the config variables are not empty
+     if (!lua_path_extra.empty())
